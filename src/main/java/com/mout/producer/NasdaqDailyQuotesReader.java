@@ -28,7 +28,7 @@ class NasdaqDailyQuotesReader {
     public List<NasdaqDailyQuotes> read() {
         var resource = getClass().getResource(NASDAQ_HISTORICAL_DATA_CSV);
         if (resource == null) {
-            throw new KafkaDemoException("Could not find file containing stock data");
+            throw new KafkaDemoException("Could not find file containing stock data " + NASDAQ_HISTORICAL_DATA_CSV);
         }
         try {
             var path = Paths.get(resource.toURI());
@@ -37,6 +37,7 @@ class NasdaqDailyQuotesReader {
                     .stream()
                     .skip(1)
                     .map(this::parseLine)
+                    .sorted()
                     .toList();
         } catch (IOException | URISyntaxException ex) {
             throw new KafkaDemoException("Could not read stock data", ex);
