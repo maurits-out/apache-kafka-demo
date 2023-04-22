@@ -1,4 +1,6 @@
-package com.mout;
+package com.mout.producer;
+
+import com.mout.KafkaDemoException;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -13,7 +15,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
 
-public class NasdaqDailyQuotesReader {
+class NasdaqDailyQuotesReader {
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("MM/dd/yyyy");
     private static final NumberFormat AMOUNT_FORMAT = NumberFormat.getCurrencyInstance(Locale.US);
