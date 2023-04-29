@@ -10,6 +10,7 @@ import java.util.List;
 public class KafkaConsumerDemo {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(KafkaConsumerDemo.class);
+    private static final Duration POLLING_TIMEOUT = Duration.ofMillis(500);
 
     private final KafkaConsumerFactory factory = new KafkaConsumerFactory();
     private final LocalDateHelper localDateHelper = new LocalDateHelper();
@@ -23,7 +24,7 @@ public class KafkaConsumerDemo {
         try (var consumer = factory.create()) {
             consumer.subscribe(List.of("daily-quotes"));
             while (true) {
-                var records = consumer.poll(Duration.ofMillis(500));
+                var records = consumer.poll(POLLING_TIMEOUT);
                 records.forEach(record -> {
                     var localDate = localDateHelper.convertEpochInMillisToLocalDate(record.timestamp());
                     LOGGER.info("Received record with quote {} of date {}", record.value(), localDate);
