@@ -1,21 +1,21 @@
 package com.mout.producer;
 
+import com.mout.helper.LocalDateHelper;
 import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.ZoneId;
 import java.util.List;
 
 public class KafkaProducerDemo {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(KafkaProducerDemo.class);
     private static final String TOPIC = "daily-quotes";
-    private static final ZoneId ZONE_ID = ZoneId.of("GMT-4");
 
     private final KafkaProducerFactory kafkaProducerFactory = new KafkaProducerFactory();
+    private final LocalDateHelper localDateHelper = new LocalDateHelper();
 
     public static void main(String[] args) {
         var kafkaDemo = new KafkaProducerDemo();
@@ -48,8 +48,7 @@ public class KafkaProducerDemo {
     }
 
     private ProducerRecord<Void, Integer> createProducerRecord(NasdaqDailyQuotes dailyQuotes) {
-        var instant = dailyQuotes.date().atStartOfDay(ZONE_ID).toInstant();
-        var timestamp = instant.toEpochMilli();
+        var timestamp = localDateHelper.convertLocalDateToEpochInMillis(dailyQuotes.date());
         return new ProducerRecord<>(TOPIC, null, timestamp, null, dailyQuotes.closePriceInCents());
     }
 
