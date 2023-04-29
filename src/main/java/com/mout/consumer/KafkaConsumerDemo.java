@@ -1,11 +1,11 @@
 package com.mout.consumer;
 
 import com.mout.helper.LocalDateHelper;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
-import java.util.List;
 
 public class KafkaConsumerDemo {
 
@@ -22,15 +22,19 @@ public class KafkaConsumerDemo {
 
     private void consumeData() {
         try (var consumer = factory.create()) {
-            consumer.subscribe(List.of("daily-quotes"));
-            while (true) {
-                var records = consumer.poll(POLLING_TIMEOUT);
-                records.forEach(record -> {
-                    var localDate = localDateHelper.convertEpochInMillisToLocalDate(record.timestamp());
-                    LOGGER.info("Received record with quote {} of date {}", record.value(), localDate);
-                });
-                consumer.commitAsync();
-            }
+            Runtime.getRuntime().addShutdownHook(new Thread(consumer::commitSync));
+            consumeDailyQuotes(consumer);
+        }
+    }
+
+    private void consumeDailyQuotes(KafkaConsumer<Void, Integer> consumer) {
+        while (true) {
+            var records = consumer.poll(POLLING_TIMEOUT);
+            records.forEach(record -> {
+                var localDate = localDateHelper.convertEpochInMillisToLocalDate(record.timestamp());
+                LOGGER.info("Received record with quote {} of date {}", record.value(), localDate);
+            });
+            consumer.commitAsync();
         }
     }
 }

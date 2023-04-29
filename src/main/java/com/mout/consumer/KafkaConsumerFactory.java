@@ -3,6 +3,7 @@ package com.mout.consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 
+import java.util.List;
 import java.util.Properties;
 
 public class KafkaConsumerFactory {
@@ -13,6 +14,10 @@ public class KafkaConsumerFactory {
         props.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.VoidDeserializer");
         props.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.IntegerDeserializer");
         props.setProperty(ConsumerConfig.GROUP_ID_CONFIG, "simple-consumer-group");
-        return new KafkaConsumer<>(props);
+
+        var consumer = new KafkaConsumer<Void, Integer>(props);
+        consumer.subscribe(List.of("daily-quotes"));
+
+        return consumer;
     }
 }
