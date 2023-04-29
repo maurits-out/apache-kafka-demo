@@ -26,17 +26,17 @@ public class KafkaConsumerDemo {
             consumer.subscribe(List.of("daily-quotes"));
             while (true) {
                 var records = consumer.poll(Duration.ofMillis(500));
-                for (var record : records) {
-                    LocalDate localDate = convertEpoch(record.timestamp());
+                records.forEach(record -> {
+                    var localDate = convertEpoch(record.timestamp());
                     LOGGER.info("Received record with quote {} of date {}", record.value(), localDate);
-                }
+                });
                 consumer.commitAsync();
             }
         }
     }
 
     private static LocalDate convertEpoch(long epoch) {
-        Instant instant = Instant.ofEpochMilli(epoch);
+        var instant = Instant.ofEpochMilli(epoch);
         return instant.atZone(ZONE_ID).toLocalDate();
     }
 }
